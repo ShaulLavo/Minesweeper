@@ -81,9 +81,11 @@ function renderBoard(board, selector) {
 		for (var j = 0; j < board[0].length; j++) {
 			var cell
 			cell = board[i][j].isMine ? MINE : board[i][j].minesAroundCount
-			// var className = `cell cell-${i}-${j}`
+			var className = `cell cell-${i}-${j}` // this is just for revealing neighbors
+			var onRightClick = `cellClickedRight(this,${i},${j});return false;`
+			var onClick = `cellClicked(this,${i},${j})`
 			// class=" ${className} "
-			strHTML += `<td class ="cell" oncontextmenu="cellClickedRight(this,${i},${j});return false;" onclick="cellClicked(this,${i},${j})"><span class="cell-content">${cell}</span></td>`
+			strHTML += `<td class ="cell ${className}" oncontextmenu="${onRightClick}" onclick="${onClick}"><span class="cell-content">${cell}</span></td>`
 		}
 		strHTML += '</tr>'
 	}
@@ -102,40 +104,41 @@ function addMines(len, mineCount) {
 }
 
 // Called when a cell (td) is clicked
-function cellClicked(elCell, i, j) {
+function cellClicked(elCell, row, col) {
 	if (!gGame.isOn) return
-	if (gBoard[i][j].isMarked) return
-	if (gBoard[i][j].isShown) return //this is so you can't click a clicked cell and add to shownCount
+	if (gBoard[row][col].isMarked) return
+	if (gBoard[row][col].isShown) return //this is so you can't click a clicked cell and add to shownCount
 	startCounter()
-	gBoard[i][j].isShown = true
+	gBoard[row][col].isShown = true
 	gGame.shownCount++
 	var cellContent = elCell.querySelector('span.cell-content')
 	cellContent.style.visibility = 'visible'
-    if (gBoard[i][j].isMine) showLose()
-	checkGameOver(i, j)
+	if (gBoard[row][col].isMine) showLose()
+	checkGameOver(row, col)
+	expandShown(gBoard, row, col)
 }
 // Called when a cell (td) is right-clicked
-function cellClickedRight(elCell, i, j) {
+function cellClickedRight(elCell, row, col) {
 	if (!gGame.isOn) return
-	if (gBoard[i][j].isShown) return
+	if (gBoard[row][col].isShown) return
 	startCounter()
 	var cellContent = elCell.querySelector('span.cell-content')
-	if (gBoard[i][j].isMarked === true) {
+	if (gBoard[row][col].isMarked === true) {
 		//handle removing marks
 		gGame.markedCount--
-		gBoard[i][j].isMarked = false
-		if (gBoard[i][j].isMine) {
+		gBoard[row][col].isMarked = false
+		if (gBoard[row][col].isMine) {
 			cellContent.innerText = MINE //put mine back
 			gGame.matchCount-- // in case of removing a flag from mine we want to reset count
-		} else cellContent.innerText = gBoard[i][j].minesAroundCount //put num back
+		} else cellContent.innerText = gBoard[row][col].minesAroundCount //put num back
 		cellContent.style.visibility = 'hidden'
 	} else {
 		// handle adding marks
 		gGame.markedCount++
-		gBoard[i][j].isMarked = true
+		gBoard[row][col].isMarked = true
 		cellContent.style.visibility = 'visible'
 		cellContent.innerText = FLAG // put flag instead of num
-		checkGameOver(i, j)
+		checkGameOver(row, col)
 	}
 }
 
@@ -144,25 +147,30 @@ function cellClickedRight(elCell, i, j) {
 function checkGameOver(row, col) {
 	var numCount = gLevel.SIZE ** 2 - gLevel.MINES
 	if (gBoard[row][col].isMarked && gBoard[row][col].isMine) gGame.matchCount++ //check if flag location matches mine
-	if (gGame.matchCount === gLevel.MINES && gGame.shownCount === numCount)
-		showWin()
+	if (gGame.matchCount === gLevel.MINES && gGame.shownCount === numCount) showWin()
 }
-
-// When user clicks a cell with no
-// mines around, we need to open
-// not only that cell, but also its
-// neighbors.
-
-// NOTE: start with a basic
-// implementation that only opens
-// the non-mine 1st degree
-// neighbors
 
 // BONUS: if you have the time
 // later, try to work more like the
 // real algorithm (see description
 // at the Bonuses section below
-function expandShown(board, elCell, i, j) {}
+//! this only opens 1st degree neighbors
+function expandShown(board, row, col) {
+	if (board[row][col].isMine) return
+	if (board[row][col].minesAroundCount === 0) {
+		for (var i = row - 1; i <= row + 1; i++) {
+			if (i < 0 || i > board.length - 1) continue
+			for (var j = col - 1; j <= col + 1; j++) {
+				if (j < 0 || j > board[0].length - 1) continue
+				if (i === row && j === col) continue
+				board[i][j].isShown = true
+				gGame.shownCount++
+				var negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+				negCellContent.style.visibility = 'visible'
+			}
+		}
+	}
+}
 
 function startCounter() {
 	if (gGame.secsPassed !== 0) return
