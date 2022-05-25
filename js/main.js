@@ -150,6 +150,22 @@ function checkGameOver(row, col) {
 	if (gGame.matchCount === gLevel.MINES && gGame.shownCount === numCount) showWin()
 }
 
+function setLvl(elLvl) {
+	if (elLvl.innerText === 'Beginner') {
+		gLevel.SIZE = 4
+		gLevel.MINES = 2
+	}
+	if (elLvl.innerText === 'Intermediate') {
+		gLevel.SIZE = 8
+		gLevel.MINES = 12
+	}
+	if (elLvl.innerText === 'Expert') {
+		gLevel.SIZE = 12
+		gLevel.MINES = 30
+	}
+	initGame()
+}
+
 // BONUS: if you have the time
 // later, try to work more like the
 // real algorithm (see description

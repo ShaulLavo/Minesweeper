@@ -30,7 +30,21 @@ table {
 	visibility: hidden;
 }
 
-.counter{
-    margin-top:10%;
-    margin-left:10%;
+.counter {
+	margin-top: 10%;
+	margin-left: 10%;
+}
+
+.level-container {
+	text-align: center;
+}
+
+.level {
+	margin-left: 5%;
+	margin-right: 8%;
+	border-bottom: 1px solid white;
+}
+
+.level:active {
+	color: green;
 }

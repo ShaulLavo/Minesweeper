@@ -9,7 +9,14 @@
 </head>
 
 <body onload="initGame()">
-    <header> <div class="counter">00</div></header>
+    <header>
+        <div class="counter">00</div>
+    </header>
+    <div class="level-container">
+        <span class="level" onclick="setLvl(this)">Beginner</span>
+        <span class="level" onclick="setLvl(this)">Intermediate</span>
+        <span class="level" onclick="setLvl(this)">Expert</span>
+    </div>
     <div class="table-container"></div>
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
