@@ -12,6 +12,7 @@ var gLevel = {
 var gGame = {
 	isOn: true,
 	isFirstClick: true,
+	life: 3,
 	shownCount: 0,
 	markedCount: 0,
 	secsPassed: 0,
@@ -29,6 +30,8 @@ function onFirstClick(elCell, row, col) {
 	addMines(gLevel.SIZE, gLevel.MINES, row, col)
 	setMinesNegsCount(gBoard)
 	renderBoard(gBoard, '.table-container')
+	//! refactor this entire thing:
+	// gGame.shownCount++                      //! this breaks the game
 	var cellContent = elCell.querySelector('span.cell-content')
 	console.log(cellContent) // add visibility to new clicked cell  //!doesn't work 😤
 	cellContent.style.visibility = 'visible' // why am i doing this in the first place?
@@ -215,9 +218,15 @@ function showWin() {
 	clearInterval(gCounterInterval)
 	console.log('you win!')
 }
-
+//! bug -last hearth won't hide
 function showLose() {
-	gGame.isOn = false
-	clearInterval(gCounterInterval)
-	console.log('you Lose!')
+	var life = document.querySelector('.life-' + gGame.life)
+	life.style.visibility = 'hidden'
+	console.log(life)
+	gGame.life--
+	if (gGame.life === 0) {
+		gGame.isOn = false
+		clearInterval(gCounterInterval)
+		console.log('you Lose!')
+	}
 }
