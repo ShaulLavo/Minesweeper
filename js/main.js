@@ -11,6 +11,7 @@ var gLevel = {
 
 var gGame = {
 	isOn: true,
+	isFirstClick: true,
 	shownCount: 0,
 	markedCount: 0,
 	secsPassed: 0,
@@ -20,9 +21,18 @@ var gCounterInterval
 
 function initGame() {
 	gBoard = buildBoard(gLevel.SIZE)
-	addMines(gLevel.SIZE, gLevel.MINES)
+	renderBoard(gBoard, '.table-container')
+}
+
+function onFirstClick(elCell, row, col) {
+	gGame.isFirstClick = false
+	addMines(gLevel.SIZE, gLevel.MINES, row, col)
 	setMinesNegsCount(gBoard)
 	renderBoard(gBoard, '.table-container')
+	var cellContent = elCell.querySelector('span.cell-content')
+	console.log(cellContent) // add visibility to new clicked cell  //!doesn't work 😤
+	cellContent.style.visibility = 'visible' // why am i doing this in the first place?
+	console.log(cellContent.style)
 	console.log(gBoard)
 }
 
@@ -94,10 +104,11 @@ function renderBoard(board, selector) {
 	elContainer.innerHTML = strHTML
 }
 
-function addMines(len, mineCount) {
+function addMines(len, mineCount, exclRow, exclCol) {
 	for (var i = 0; i < mineCount; i++) {
 		var row = getRandomIntInclusive(0, len - 1)
 		var col = getRandomIntInclusive(0, len - 1)
+		if (exclRow === row && exclCol === col) return addMines(len, 1) //don't place bomb on excluded cell (first clicked)
 		if (gBoard[row][col].isMine === true) return addMines(len, 1) // make sure addMines won't randomize same cell twice
 		gBoard[row][col].isMine = true
 	}
@@ -105,6 +116,7 @@ function addMines(len, mineCount) {
 
 // Called when a cell (td) is clicked
 function cellClicked(elCell, row, col) {
+	if (gGame.isFirstClick) onFirstClick(elCell, row, col)
 	if (!gGame.isOn) return
 	if (gBoard[row][col].isMarked) return
 	if (gBoard[row][col].isShown) return //this is so you can't click a clicked cell and add to shownCount
@@ -195,7 +207,7 @@ function startCounter() {
 		gGame.secsPassed++
 		if (gGame.secsPassed < 10) counter.innerText = '0' + gGame.secsPassed
 		else counter.innerText = gGame.secsPassed
-	}, 100)
+	}, 1000)
 }
 
 function showWin() {
