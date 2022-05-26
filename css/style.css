@@ -9,14 +9,14 @@ body {
 
 table {
 	margin: auto;
-	margin-top: 10%;
+	margin-top: 6%;
 }
 
 .cell {
-	width: 40px;
-	height: 40px;
+	width: 60px;
+	height: 60px;
 	text-align: center;
-	font-size: 1.5em;
+	font-size: 2em;
 	border: 1px white solid;
 	margin: 0;
 }
@@ -29,13 +29,18 @@ table {
 	visibility: hidden;
 }
 
+.counter-container {
+	font-size: 1.5em;
+}
 .counter {
-	margin-top: 10%;
-	margin-left: 10%;
+	position: absolut;
+	margin-top: 1%;
+	margin-left: 2%;
 }
 
 .level-container {
 	text-align: center;
+	font-size: 1.3em;
 }
 
 .level {
@@ -46,4 +51,23 @@ table {
 
 .level:active {
 	color: green;
+}
+
+.smiley-container {
+	text-align: center;
+	margin-top: 3%;
+}
+
+.smiley {
+	padding: 5px;
+	border: 1px solid white;
+	font-size: 2em;
+}
+
+.life-container {
+	font-size: 1.5em;
+}
+
+.cell.clicked-cell {
+	background-color: rgb(175, 175, 175);
 }

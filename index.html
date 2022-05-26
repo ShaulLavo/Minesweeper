@@ -9,15 +9,19 @@
 </head>
 
 <body onload="initGame()">
-    <header>
-        <div class="counter">00</div>
-        <div class="life-container"><span class="life-1"></span>💜<span class="life-2">💜</span><span
-                class="life-3">💜</span></div>
-    </header>
+    <div class="counter-container">Time:<span class="counter"> 00</span></div>
+    <div class="life-container">
+        <span class="life-1">💜</span>
+        <span class="life-2">💜</span>
+        <span class="life-3">💜</span>
+    </div>
     <div class="level-container">
         <span class="level" onclick="setLvl(this)">Beginner</span>
         <span class="level" onclick="setLvl(this)">Intermediate</span>
         <span class="level" onclick="setLvl(this)">Expert</span>
+    </div>
+    <div class="smiley-container">
+        <span class="smiley" onclick="smile(this)">😄</span>
     </div>
     <div class="table-container"></div>
     <script src="js/utils.js"></script>

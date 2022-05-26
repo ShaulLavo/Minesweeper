@@ -19,24 +19,13 @@ var gGame = {
 	matchCount: 0
 }
 var gCounterInterval
+var gWoozySmileyInterval
 
-function initGame() {
+function initGame(row, col) {
 	gBoard = buildBoard(gLevel.SIZE)
-	renderBoard(gBoard, '.table-container')
-}
-
-function onFirstClick(elCell, row, col) {
-	gGame.isFirstClick = false
 	addMines(gLevel.SIZE, gLevel.MINES, row, col)
 	setMinesNegsCount(gBoard)
 	renderBoard(gBoard, '.table-container')
-	//! refactor this entire thing:
-	// gGame.shownCount++                      //! this breaks the game
-	var cellContent = elCell.querySelector('span.cell-content')
-	console.log(cellContent) // add visibility to new clicked cell  //!doesn't work 😤
-	cellContent.style.visibility = 'visible' // why am i doing this in the first place?
-	console.log(cellContent.style)
-	console.log(gBoard)
 }
 
 // Builds the board
@@ -94,6 +83,7 @@ function renderBoard(board, selector) {
 		for (var j = 0; j < board[0].length; j++) {
 			var cell
 			cell = board[i][j].isMine ? MINE : board[i][j].minesAroundCount
+			if (board[i][j].minesAroundCount === 0) cell = ''
 			var className = `cell cell-${i}-${j}` // this is just for revealing neighbors
 			var onRightClick = `cellClickedRight(this,${i},${j});return false;`
 			var onClick = `cellClicked(this,${i},${j})`
@@ -111,24 +101,33 @@ function addMines(len, mineCount, exclRow, exclCol) {
 	for (var i = 0; i < mineCount; i++) {
 		var row = getRandomIntInclusive(0, len - 1)
 		var col = getRandomIntInclusive(0, len - 1)
-		if (exclRow === row && exclCol === col) return addMines(len, 1) //don't place bomb on excluded cell (first clicked)
-		if (gBoard[row][col].isMine === true) return addMines(len, 1) // make sure addMines won't randomize same cell twice
+		if (exclRow === row && exclCol === col) addMines(len, 1) //don't place bomb on excluded cell (first clicked)
+		if (gBoard[row][col].isMine === true) addMines(len, 1) // make sure addMines won't randomize same cell twice
 		gBoard[row][col].isMine = true
 	}
 }
 
 // Called when a cell (td) is clicked
 function cellClicked(elCell, row, col) {
-	if (gGame.isFirstClick) onFirstClick(elCell, row, col)
+	if (gGame.isFirstClick) {
+		//! BUG - if first cell is a bomb it won't display the number
+		if (gBoard[row][col].isMine) initGame(row, col)
+		gGame.isFirstClick = false
+	}
 	if (!gGame.isOn) return
 	if (gBoard[row][col].isMarked) return
 	if (gBoard[row][col].isShown) return //this is so you can't click a clicked cell and add to shownCount
+	var cellContent = elCell.querySelector('span.cell-content')
 	startCounter()
 	gBoard[row][col].isShown = true
-	gGame.shownCount++
-	var cellContent = elCell.querySelector('span.cell-content')
+	if (!gBoard[row][col].isMine) gGame.shownCount++ //only count shown nums
+	//? elCell.classList.add('.clicked-cell') why this method never works
+	elCell.style.backgroundColor = 'rgb(175, 175, 175)'
 	cellContent.style.visibility = 'visible'
-	if (gBoard[row][col].isMine) showLose()
+	if (gBoard[row][col].isMine) {
+		handleLife(elCell, row, col)
+		smileyOnMine()
+	}
 	checkGameOver(row, col)
 	expandShown(gBoard, row, col)
 }
@@ -157,14 +156,6 @@ function cellClickedRight(elCell, row, col) {
 	}
 }
 
-// Game ends when all mines are marked,
-// and all the other cells are shown
-function checkGameOver(row, col) {
-	var numCount = gLevel.SIZE ** 2 - gLevel.MINES
-	if (gBoard[row][col].isMarked && gBoard[row][col].isMine) gGame.matchCount++ //check if flag location matches mine
-	if (gGame.matchCount === gLevel.MINES && gGame.shownCount === numCount) showWin()
-}
-
 function setLvl(elLvl) {
 	if (elLvl.innerText === 'Beginner') {
 		gLevel.SIZE = 4
@@ -178,7 +169,7 @@ function setLvl(elLvl) {
 		gLevel.SIZE = 12
 		gLevel.MINES = 30
 	}
-	initGame()
+	restart()
 }
 
 // BONUS: if you have the time
@@ -194,17 +185,67 @@ function expandShown(board, row, col) {
 			for (var j = col - 1; j <= col + 1; j++) {
 				if (j < 0 || j > board[0].length - 1) continue
 				if (i === row && j === col) continue
+				if (!board[i][j].isShown) gGame.shownCount++ // make sure we don't count prev opened cells
 				board[i][j].isShown = true
-				gGame.shownCount++
 				var negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+				var elCell = document.querySelector(`.cell-${i}-${j}`)
 				negCellContent.style.visibility = 'visible'
+				elCell.style.backgroundColor = 'rgb(175, 175, 175)'
 			}
 		}
 	}
 }
 
+// Game ends when all mines are marked,
+// and all the other cells are shown
+function checkGameOver(row, col) {
+	var numCount = gLevel.SIZE ** 2 - gLevel.MINES
+	if (gBoard[row][col].isMarked && gBoard[row][col].isMine) gGame.matchCount++ //check if flag location matches mine
+	if (gGame.matchCount === gLevel.MINES && gGame.shownCount === numCount) showWin()
+	if (gGame.life === 0) showLose()
+}
+
+function showWin() {
+	gGame.isOn = false
+	clearInterval(gCounterInterval)
+	console.log('you win!')
+}
+
+function showLose() {
+	var smiley = document.querySelector('.smiley')
+	smiley.innerText = '🤕'
+	gGame.isOn = false
+	clearInterval(gWoozySmileyInterval)
+	clearInterval(gCounterInterval)
+	console.log('you Lose!')
+}
+
+//! bug -last hearth won't hide
+function handleLife(elCell, row, col) {
+	var life = document.querySelector('.life-' + gGame.life)
+	life.style.visibility = 'hidden'
+	gGame.life--
+	if (gGame.life === 0) return
+	gGame.matchCount++ //if you stepped on mine and stayed alive - count it
+	setTimeout(function () {
+		elCell.innerText = FLAG
+		gBoard[row][col].isMarked = true
+	}, 1000)
+}
+
+function restart() {
+	for (var i = 1; i <= 3; i++) {
+		var life = document.querySelector('.life-' + i)
+		life.style.visibility = 'visible'
+	}
+	gGame.life = 3
+	gGame.secsPassed = 0
+	gGame.isOn = true
+	initGame()
+}
+
 function startCounter() {
-	if (gGame.secsPassed !== 0) return
+	if (gGame.isFirstClick) return
 	var counter = document.querySelector('.counter')
 	gCounterInterval = setInterval(function () {
 		gGame.secsPassed++
@@ -213,20 +254,31 @@ function startCounter() {
 	}, 1000)
 }
 
-function showWin() {
-	gGame.isOn = false
-	clearInterval(gCounterInterval)
-	console.log('you win!')
+function smile(elSmiley) {
+	// console.log(elSmiley)
+	elSmiley.innerText = '😆'
+	setTimeout(function () {
+		elSmiley.innerText = '😄'
+	}, 333)
+	restart()
 }
-//! bug -last hearth won't hide
-function showLose() {
-	var life = document.querySelector('.life-' + gGame.life)
-	life.style.visibility = 'hidden'
-	console.log(life)
-	gGame.life--
-	if (gGame.life === 0) {
-		gGame.isOn = false
-		clearInterval(gCounterInterval)
-		console.log('you Lose!')
-	}
+
+function smileyOnMine() {
+	var smiley = document.querySelector('.smiley')
+	smiley.innerText = '😵'
+	gWoozySmileyInterval = setTimeout(function () {
+		smiley.innerText = '😄'
+	}, 1000)
 }
+
+//if first click is a mine swap it's location with first empty cell
+// function firstIsMine(row, col) {
+// 	var i = 0
+// 	var j = 0
+// 	while (gBoard[i][j].isMine) i++
+// 	var temp = gBoard[row][col]
+// 	gBoard[row][col] = gBoard[i][j]
+// 	gBoard[i][j] = temp
+// 	setMinesNegsCount(gBoard)
+// 	renderBoard(gBoard, '.table-container')
+// }
