@@ -12,6 +12,7 @@ var gLevel = {
 var gGame = {
 	isOn: true,
 	isFirstClick: true,
+	isHint: false,
 	life: 3,
 	shownCount: 0,
 	markedCount: 0,
@@ -83,7 +84,7 @@ function renderBoard(board, selector) {
 		for (var j = 0; j < board[0].length; j++) {
 			var cell
 			cell = board[i][j].isMine ? MINE : board[i][j].minesAroundCount
-			if (board[i][j].minesAroundCount === 0) cell = ''
+			if (board[i][j].minesAroundCount === 0 && !board[i][j].isMine) cell = ''
 			var className = `cell cell-${i}-${j}` // this is just for revealing neighbors
 			var onRightClick = `cellClickedRight(this,${i},${j});return false;`
 			var onClick = `cellClicked(this,${i},${j})`
@@ -121,8 +122,7 @@ function cellClicked(elCell, row, col) {
 	startCounter()
 	gBoard[row][col].isShown = true
 	if (!gBoard[row][col].isMine) gGame.shownCount++ //only count shown nums
-	//? elCell.classList.add('.clicked-cell') why this method never works
-	elCell.style.backgroundColor = 'rgb(175, 175, 175)'
+	elCell.classList.add('clicked-cell')
 	cellContent.style.visibility = 'visible'
 	if (gBoard[row][col].isMine) {
 		handleLife(elCell, row, col)
@@ -190,7 +190,7 @@ function expandShown(board, row, col) {
 				var negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
 				var elCell = document.querySelector(`.cell-${i}-${j}`)
 				negCellContent.style.visibility = 'visible'
-				elCell.style.backgroundColor = 'rgb(175, 175, 175)'
+				elCell.classList.add('clicked-cell')
 			}
 		}
 	}
@@ -220,7 +220,6 @@ function showLose() {
 	console.log('you Lose!')
 }
 
-//! bug -last hearth won't hide
 function handleLife(elCell, row, col) {
 	var life = document.querySelector('.life-' + gGame.life)
 	life.style.visibility = 'hidden'
@@ -269,6 +268,10 @@ function smileyOnMine() {
 	gWoozySmileyInterval = setTimeout(function () {
 		smiley.innerText = '😄'
 	}, 1000)
+}
+
+function hint(elHint) {
+	elHint.classList.add('hint-clicked')
 }
 
 //if first click is a mine swap it's location with first empty cell

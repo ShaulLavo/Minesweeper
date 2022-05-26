@@ -71,3 +71,13 @@ table {
 .cell.clicked-cell {
 	background-color: rgb(175, 175, 175);
 }
+
+.hint-container {
+	font-size: 1.8em;
+	margin-right: 0;
+}
+
+.hint-clicked {
+	text-shadow: 2px 2px;
+	filter: brightness(1.5);
+}
