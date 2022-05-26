@@ -112,13 +112,13 @@ function addMines(len, mineCount, exclRow, exclCol) {
 
 // Called when a cell (td) is clicked
 function cellClicked(elCell, row, col) {
-	if (gGame.isFirstClick) return handleFirstClick(elCell, row, col)
+	if (gGame.isFirstClick && gGame.isHint) return alert('click on cell first') //stop user from hint on first turn
+	if (gGame.isFirstClick) handleFirstClick(elCell, row, col)
 	if (!gGame.isOn) return
 	if (gBoard[row][col].isMarked) return
-	if (gBoard[row][col].isShown) return //this is so you can't click a clicked cell and add to shownCount
+	if (gBoard[row][col].isShown) return
 	if (gGame.isHint) return handleHint(row, col)
 	var cellContent = elCell.querySelector('span.cell-content')
-	startCounter()
 	gBoard[row][col].isShown = true
 	if (!gBoard[row][col].isMine) gGame.shownCount++ //only count shown nums
 	elCell.classList.add('clicked-cell')
@@ -134,7 +134,10 @@ function cellClicked(elCell, row, col) {
 function cellClickedRight(elCell, row, col) {
 	if (!gGame.isOn) return
 	if (gBoard[row][col].isShown) return
-	startCounter()
+	if (gGame.isFirstClick) {
+		startCounter()
+		gGame.isFirstClick = false
+	}
 	var cellContent = elCell.querySelector('span.cell-content')
 	if (gBoard[row][col].isMarked === true) {
 		//handle removing marks
@@ -193,6 +196,7 @@ function expandShown(board, row, col) {
 			}
 		}
 	}
+	checkGameOver(row, col)
 }
 
 // Game ends when all mines are marked,
@@ -205,10 +209,15 @@ function checkGameOver(row, col) {
 }
 
 function handleFirstClick(elCell, row, col) {
+	startCounter()
 	if (gBoard[row][col].isMine) initGame(row, col)
 	gGame.isFirstClick = false
 	var cellContent = elCell.querySelector('span.cell-content')
-	cellContent.classList.remove('cell-content') // this is a patch cuz i don't understand the bug
+	setTimeout(function () {
+		elCell.classList.add('clicked-cell')
+		cellContent.classList.remove('cell-content')
+	}, 50)
+	// this is a patch cuz i don't understand the bug
 }
 
 function showWin() {
@@ -231,10 +240,10 @@ function handleLife(elCell, row, col) {
 	life.style.visibility = 'hidden'
 	gGame.life--
 	if (gGame.life === 0) return
-	gGame.matchCount++ //if you stepped on mine and stayed alive - count it
+	gGame.markedCount++ // when stepping on mine it gets auto marked
+	gBoard[row][col].isMarked = true
 	setTimeout(function () {
 		elCell.innerText = FLAG
-		gBoard[row][col].isMarked = true
 	}, 1000)
 }
 
@@ -243,14 +252,21 @@ function restart() {
 		var life = document.querySelector('.life-' + i)
 		life.style.visibility = 'visible'
 	}
-	gGame.life = 3
-	gGame.secsPassed = 0
+	clearInterval(gCounterInterval)
 	gGame.isOn = true
+	gGame.isFirstClick = true
+	gGame.isHint = false
+	gGame.hintsLeft = 3
+	gGame.life = 3
+	gGame.shownCount = 0
+	gGame.markedCount = 0
+	gGame.secsPassed = 0
+	gGame.matchCount = 0
 	initGame()
 }
 
 function startCounter() {
-	if (gGame.isFirstClick) return
+	if (!gGame.isFirstClick) return
 	var counter = document.querySelector('.counter')
 	gCounterInterval = setInterval(function () {
 		gGame.secsPassed++
@@ -278,13 +294,15 @@ function smileyOnMine() {
 
 function hint(elHint) {
 	gLastHint = elHint
-	if (gGame.isHint) return //stops you from pressing on more then one hint
+	//! add something to stop from clicking more then one hint
 	if (!elHint.classList.contains('hint-clicked')) {
+		console.log('hint')
 		//allows toggle (without toggle)
 		elHint.classList.add('hint-clicked')
 		gGame.isHint = true
 		gGame.hintsLeft--
 	} else {
+		console.log('hint removed')
 		elHint.classList.remove('hint-clicked')
 		gGame.isHint = false
 		gGame.hintsLeft++
@@ -298,11 +316,15 @@ function handleHint(row, col) {
 		for (var j = col - 1; j <= col + 1; j++) {
 			if (j < 0 || j > gBoard[0].length - 1) continue
 			if (i === row && j === col) continue
+			let elCell = document.querySelector(`.cell-${i}-${j}`)
 			let negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+			console.log(elCell)
 			// had to use let or it won't work sorry 😕
 			negCellContent.style.visibility = 'visible'
+			elCell.style.backgroundColor = 'lightgray'
 			gLastHint.style.display = 'none'
 			setTimeout(function () {
+				elCell.style.backgroundColor = ''
 				negCellContent.style.visibility = 'hidden'
 			}, 1000)
 		}
