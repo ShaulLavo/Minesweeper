@@ -1,15 +1,16 @@
 * {
 	box-sizing: border-box;
+	font-family: 'Koulen', cursive;
 }
 
 body {
-	background-color: black;
-	color: white;
+	background-color: rgb(23, 23, 23);
+	color: rgb(233, 233, 233);
 }
 
 table {
 	margin: auto;
-	margin-top: 6%;
+	margin-top: 4%;
 }
 
 .cell {
@@ -17,12 +18,17 @@ table {
 	height: 60px;
 	text-align: center;
 	font-size: 2em;
-	border: 1px white solid;
+	border: 1px rgb(233, 233, 233) solid;
 	margin: 0;
 }
 
 .cell:hover {
 	background-color: rgb(120, 120, 120);
+}
+
+.ui-container {
+	position: absolute;
+	/* top: 10%; */
 }
 
 .cell-content {
@@ -40,12 +46,13 @@ table {
 .level-container {
 	text-align: center;
 	font-size: 1.3em;
+	margin: auto;
 }
 
 .level {
 	margin-left: 5%;
 	margin-right: 8%;
-	border-bottom: 1px solid white;
+	border-bottom: 1px solid rgb(233, 233, 233);
 }
 
 .level:active {
@@ -59,7 +66,7 @@ table {
 
 .smiley {
 	padding: 5px;
-	border: 1px solid white;
+	border: 1px solid rgb(233, 233, 233);
 	font-size: 2em;
 }
 
@@ -74,6 +81,7 @@ table {
 .hint-container {
 	font-size: 1.8em;
 	margin-right: 0;
+	display: inline;
 }
 
 .hint-clicked {
@@ -88,4 +96,9 @@ table {
 	color: yellowgreen;
 	display: none;
 	transition: 0.4s;
+}
+
+footer {
+	margin-top: 5%;
+	color: rgb(112, 112, 112);
 }

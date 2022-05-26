@@ -5,31 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <!-- just fonts: -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
     <title>Document</title>
 </head>
 
 <body onload="initGame()">
-    <div class="counter-container">Time:<span class="counter"> 00</span></div>
-    <div class="life-container">
-        <span class="life-1">💜</span>
-        <span class="life-2">💜</span>
-        <span class="life-3">💜</span>
-    </div>
-    <div class="hint-container">
-        <span onclick="hint(this)" class="hint-1">💡</span>
-        <span onclick="hint(this)" class="hint-2">💡</span>
-        <span onclick="hint(this)" class="hint-3">💡</span>
+    <div class="ui-container">
+        <div class="counter-container">Time:<span class="counter"> 00</span></div>
+        <div class="life-container">
+            <span class="life-1">💜</span>
+            <span class="life-2">💜</span>
+            <span class="life-3">💜</span>
+        </div>
+        <div class="hint-container">
+            <span onclick="hint(this)" class="hint-1">💡</span>
+            <span onclick="hint(this)" class="hint-2">💡</span>
+            <span onclick="hint(this)" class="hint-3">💡</span>
+        </div>
     </div>
     <div class="level-container">
         <span class="level" onclick="setLvl(this)">Beginner</span>
         <span class="level" onclick="setLvl(this)">Intermediate</span>
         <span class="level" onclick="setLvl(this)">Expert</span>
     </div>
+
     <div class="smiley-container">
         <span class="smiley" onclick="smile(this)">😄</span>
     </div>
     <div class="modal">You Win!</div>
     <div class="table-container"></div>
+    <footer>made by Shaul Lavochkin</footer>
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
 </body>
