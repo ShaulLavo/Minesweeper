@@ -22,6 +22,7 @@ var gGame = {
 }
 var gCounterInterval
 var gWoozySmileyInterval
+var gGrinningSmileyInterval
 var gLastHint
 
 function initGame(row, col) {
@@ -224,6 +225,7 @@ function handleFirstClick(elCell, row, col) {
 function showWin() {
 	gGame.isOn = false
 	clearInterval(gCounterInterval)
+	KeepScore()
 	var elModal = document.querySelector('.modal')
 	elModal.innerText = 'You Win'
 	elModal.style.display = 'block'
@@ -239,6 +241,7 @@ function showLose() {
 	gGame.isOn = false
 	clearInterval(gWoozySmileyInterval)
 	clearInterval(gCounterInterval)
+	clearInterval(gGrinningSmileyInterval)
 	var elModal = document.querySelector('.modal')
 	elModal.innerText = 'You Lose'
 	elModal.style.display = 'block'
@@ -290,7 +293,7 @@ function startCounter() {
 function smile(elSmiley) {
 	// console.log(elSmiley)
 	elSmiley.innerText = '😆'
-	setTimeout(function () {
+	gGrinningSmileyInterval = setTimeout(function () {
 		elSmiley.innerText = '😄'
 	}, 333)
 	restart()
@@ -351,6 +354,13 @@ function revealAllMines() {
 			}
 		}
 	}
+}
+
+//the "score" of the game is the time taken to complete it
+function KeepScore() {
+	var currScore = localStorage.getItem('Best Time')
+	if (currScore === null) localStorage.setItem('Best Time', gGame.secsPassed)
+	if (currScore > gGame.secsPassed) localStorage.setItem('Best Time', gGame.secsPassed)
 }
 
 //if first click is a mine swap it's location with first empty cell

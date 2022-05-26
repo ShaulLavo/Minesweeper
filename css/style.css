@@ -28,7 +28,6 @@ table {
 
 .ui-container {
 	position: absolute;
-	/* top: 10%; */
 }
 
 .cell-content {
@@ -99,6 +98,7 @@ table {
 }
 
 footer {
-	margin-top: 5%;
+	position: absolute;
+	bottom: 0;
 	color: rgb(112, 112, 112);
 }
