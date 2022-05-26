@@ -118,11 +118,11 @@ function cellClicked(elCell, row, col) {
 	if (gBoard[row][col].isMarked) return
 	if (gBoard[row][col].isShown) return
 	if (gGame.isHint) return handleHint(row, col)
-	var cellContent = elCell.querySelector('span.cell-content')
+	var elCellContent = elCell.querySelector('span.cell-content')
 	gBoard[row][col].isShown = true
 	if (!gBoard[row][col].isMine) gGame.shownCount++ //only count shown nums
 	elCell.classList.add('clicked-cell')
-	cellContent.style.visibility = 'visible'
+	elCellContent.style.visibility = 'visible'
 	if (gBoard[row][col].isMine) {
 		handleLife(elCell, row, col)
 		smileyOnMine()
@@ -138,22 +138,22 @@ function cellClickedRight(elCell, row, col) {
 		startCounter()
 		gGame.isFirstClick = false
 	}
-	var cellContent = elCell.querySelector('span.cell-content')
+	var elCellContent = elCell.querySelector('span.cell-content')
 	if (gBoard[row][col].isMarked === true) {
 		//handle removing marks
 		gGame.markedCount--
 		gBoard[row][col].isMarked = false
 		if (gBoard[row][col].isMine) {
-			cellContent.innerText = MINE //put mine back
+			elCellContent.innerText = MINE //put mine back
 			gGame.matchCount-- // in case of removing a flag from mine we want to reset count
-		} else cellContent.innerText = gBoard[row][col].minesAroundCount //put num back
-		cellContent.style.visibility = 'hidden'
+		} else elCellContent.innerText = gBoard[row][col].minesAroundCount //put num back
+		elCellContent.style.visibility = 'hidden'
 	} else {
 		// handle adding marks
 		gGame.markedCount++
 		gBoard[row][col].isMarked = true
-		cellContent.style.visibility = 'visible'
-		cellContent.innerText = FLAG // put flag instead of num
+		elCellContent.style.visibility = 'visible'
+		elCellContent.innerText = FLAG // put flag instead of num
 		checkGameOver(row, col)
 	}
 }
@@ -189,9 +189,9 @@ function expandShown(board, row, col) {
 				if (i === row && j === col) continue
 				if (!board[i][j].isShown) gGame.shownCount++ // make sure we don't count prev opened cells
 				board[i][j].isShown = true
-				var negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+				var elNegelCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
 				var elCell = document.querySelector(`.cell-${i}-${j}`)
-				negCellContent.style.visibility = 'visible'
+				elNegelCellContent.style.visibility = 'visible'
 				elCell.classList.add('clicked-cell')
 			}
 		}
@@ -212,10 +212,10 @@ function handleFirstClick(elCell, row, col) {
 	startCounter()
 	if (gBoard[row][col].isMine) initGame(row, col)
 	gGame.isFirstClick = false
-	var cellContent = elCell.querySelector('span.cell-content')
+	var elCellContent = elCell.querySelector('span.cell-content')
 	setTimeout(function () {
 		elCell.classList.add('clicked-cell')
-		cellContent.classList.remove('cell-content')
+		elCellContent.classList.remove('cell-content')
 	}, 50)
 	// this is a patch cuz i don't understand the bug
 	//set timeout so code will finish and then change the style
@@ -329,15 +329,15 @@ function handleHint(row, col) {
 			if (j < 0 || j > gBoard[0].length - 1) continue
 			if (i === row && j === col) continue
 			let elCell = document.querySelector(`.cell-${i}-${j}`)
-			let negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+			let elNegelCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
 			console.log(elCell)
 			// had to use let or it won't work sorry 😕
-			negCellContent.style.visibility = 'visible'
+			elNegelCellContent.style.visibility = 'visible'
 			elCell.style.backgroundColor = 'lightgray'
 			gLastHint.style.display = 'none'
 			setTimeout(function () {
 				elCell.style.backgroundColor = ''
-				negCellContent.style.visibility = 'hidden'
+				elNegelCellContent.style.visibility = 'hidden'
 			}, 1000)
 		}
 	}
@@ -346,8 +346,8 @@ function revealAllMines() {
 	for (var i = 0; i < gBoard.length; i++) {
 		for (var j = 0; j < gBoard[0].length; j++) {
 			if (gBoard[i][j].isMine && !gBoard[i][j].isShown) {
-				var negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
-				negCellContent.style.visibility = 'visible'
+				var elNegelCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+				elNegelCellContent.style.visibility = 'visible'
 			}
 		}
 	}
