@@ -13,6 +13,7 @@ var gGame = {
 	isOn: true,
 	isFirstClick: true,
 	isHint: false,
+	hintsLeft: 3,
 	life: 3,
 	shownCount: 0,
 	markedCount: 0,
@@ -21,6 +22,7 @@ var gGame = {
 }
 var gCounterInterval
 var gWoozySmileyInterval
+var gLastHint
 
 function initGame(row, col) {
 	gBoard = buildBoard(gLevel.SIZE)
@@ -110,14 +112,11 @@ function addMines(len, mineCount, exclRow, exclCol) {
 
 // Called when a cell (td) is clicked
 function cellClicked(elCell, row, col) {
-	if (gGame.isFirstClick) {
-		//! BUG - if first cell is a bomb it won't display the number
-		if (gBoard[row][col].isMine) initGame(row, col)
-		gGame.isFirstClick = false
-	}
+	if (gGame.isFirstClick) handleFirstClick(row, col)
 	if (!gGame.isOn) return
 	if (gBoard[row][col].isMarked) return
 	if (gBoard[row][col].isShown) return //this is so you can't click a clicked cell and add to shownCount
+	if (gGame.isHint) return handleHint(row, col)
 	var cellContent = elCell.querySelector('span.cell-content')
 	startCounter()
 	gBoard[row][col].isShown = true
@@ -205,6 +204,11 @@ function checkGameOver(row, col) {
 	if (gGame.life === 0) showLose()
 }
 
+function handleFirstClick(row, col) {
+	if (gBoard[row][col].isMine) initGame(row, col)
+	gGame.isFirstClick = false
+}
+
 function showWin() {
 	gGame.isOn = false
 	clearInterval(gCounterInterval)
@@ -271,7 +275,36 @@ function smileyOnMine() {
 }
 
 function hint(elHint) {
-	elHint.classList.add('hint-clicked')
+	gLastHint = elHint
+	if (gGame.isHint) return //stops you from pressing on more then one hint
+	if (!elHint.classList.contains('hint-clicked')) {
+		//allows toggle (without toggle)
+		elHint.classList.add('hint-clicked')
+		gGame.isHint = true
+		gGame.hintsLeft--
+	} else {
+		elHint.classList.remove('hint-clicked')
+		gGame.isHint = false
+		gGame.hintsLeft++
+	}
+}
+
+function handleHint(row, col) {
+	gGame.isHint = false
+	for (var i = row - 1; i <= row + 1; i++) {
+		if (i < 0 || i > gBoard.length - 1) continue
+		for (var j = col - 1; j <= col + 1; j++) {
+			if (j < 0 || j > gBoard[0].length - 1) continue
+			if (i === row && j === col) continue
+			let negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+			// had to use let or it won't work sorry 😕
+			negCellContent.style.visibility = 'visible'
+			gLastHint.style.display = 'none'
+			setTimeout(function () {
+				negCellContent.style.visibility = 'hidden'
+			}, 1000)
+		}
+	}
 }
 
 //if first click is a mine swap it's location with first empty cell
