@@ -112,7 +112,7 @@ function addMines(len, mineCount, exclRow, exclCol) {
 
 // Called when a cell (td) is clicked
 function cellClicked(elCell, row, col) {
-	if (gGame.isFirstClick) handleFirstClick(row, col)
+	if (gGame.isFirstClick) return handleFirstClick(elCell, row, col)
 	if (!gGame.isOn) return
 	if (gBoard[row][col].isMarked) return
 	if (gBoard[row][col].isShown) return //this is so you can't click a clicked cell and add to shownCount
@@ -204,9 +204,11 @@ function checkGameOver(row, col) {
 	if (gGame.life === 0) showLose()
 }
 
-function handleFirstClick(row, col) {
+function handleFirstClick(elCell, row, col) {
 	if (gBoard[row][col].isMine) initGame(row, col)
 	gGame.isFirstClick = false
+	var cellContent = elCell.querySelector('span.cell-content')
+	cellContent.classList.remove('cell-content') // this is a patch cuz i don't understand the bug
 }
 
 function showWin() {
