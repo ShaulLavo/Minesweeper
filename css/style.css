@@ -80,3 +80,12 @@ table {
 	text-shadow: 2px 2px;
 	filter: brightness(1.5);
 }
+
+.modal {
+	font-size: 100px;
+	position: absolute;
+	left: 30%;
+	color: yellowgreen;
+	display: none;
+	transition: 0.4s;
+}

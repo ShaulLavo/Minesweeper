@@ -218,21 +218,33 @@ function handleFirstClick(elCell, row, col) {
 		cellContent.classList.remove('cell-content')
 	}, 50)
 	// this is a patch cuz i don't understand the bug
+	//set timeout so code will finish and then change the style
 }
 
 function showWin() {
 	gGame.isOn = false
 	clearInterval(gCounterInterval)
-	console.log('you win!')
+	var elModal = document.querySelector('.modal')
+	elModal.innerText = 'You Win'
+	elModal.style.display = 'block'
+	setTimeout(function () {
+		elModal.style.display = 'none'
+	}, 1000)
 }
 
 function showLose() {
+	revealAllMines()
 	var smiley = document.querySelector('.smiley')
 	smiley.innerText = '🤕'
 	gGame.isOn = false
 	clearInterval(gWoozySmileyInterval)
 	clearInterval(gCounterInterval)
-	console.log('you Lose!')
+	var elModal = document.querySelector('.modal')
+	elModal.innerText = 'You Lose'
+	elModal.style.display = 'block'
+	setTimeout(function () {
+		elModal.style.display = 'none'
+	}, 1000)
 }
 
 function handleLife(elCell, row, col) {
@@ -327,6 +339,16 @@ function handleHint(row, col) {
 				elCell.style.backgroundColor = ''
 				negCellContent.style.visibility = 'hidden'
 			}, 1000)
+		}
+	}
+}
+function revealAllMines() {
+	for (var i = 0; i < gBoard.length; i++) {
+		for (var j = 0; j < gBoard[0].length; j++) {
+			if (gBoard[i][j].isMine && !gBoard[i][j].isShown) {
+				var negCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+				negCellContent.style.visibility = 'visible'
+			}
 		}
 	}
 }
