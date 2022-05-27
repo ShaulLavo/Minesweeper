@@ -1,5 +1,4 @@
 * {
-	box-sizing: border-box;
 	font-family: 'Koulen', cursive;
 }
 
@@ -10,7 +9,6 @@ body {
 
 table {
 	margin: auto;
-	margin-top: 4%;
 }
 
 .cell {
@@ -19,7 +17,6 @@ table {
 	text-align: center;
 	font-size: 2em;
 	border: 1px rgb(233, 233, 233) solid;
-	margin: 0;
 }
 
 .cell:hover {
@@ -39,7 +36,7 @@ table {
 }
 .counter {
 	margin-top: 1%;
-	margin-left: 2%;
+	margin-left: 3%;
 }
 
 .level-container {
@@ -61,6 +58,7 @@ table {
 .smiley-container {
 	text-align: center;
 	margin-top: 3%;
+	margin-bottom: 3%;
 }
 
 .smiley {

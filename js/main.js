@@ -268,6 +268,8 @@ function restart() {
 		life.style.visibility = 'visible'
 	}
 	clearInterval(gCounterInterval)
+	var counter = document.querySelector('.counter')
+	counter.innerText = '00'
 	gGame.isOn = true
 	gGame.isFirstClick = true
 	gGame.isHint = false
@@ -310,14 +312,13 @@ function smileyOnMine() {
 function hint(elHint) {
 	gLastHint = elHint
 	//! add something to stop from clicking more then one hint
+	// console.log(elHint.classList)
 	if (!elHint.classList.contains('hint-clicked')) {
-		console.log('hint')
 		//allows toggle (without toggle)
 		elHint.classList.add('hint-clicked')
 		gGame.isHint = true
 		gGame.hintsLeft--
 	} else {
-		console.log('hint removed')
 		elHint.classList.remove('hint-clicked')
 		gGame.isHint = false
 		gGame.hintsLeft++
@@ -331,16 +332,18 @@ function handleHint(row, col) {
 		for (var j = col - 1; j <= col + 1; j++) {
 			if (j < 0 || j > gBoard[0].length - 1) continue
 			if (i === row && j === col) continue
+			if (gBoard[i][j].isShown) continue
 			let elCell = document.querySelector(`.cell-${i}-${j}`)
-			let elNegelCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
+			let elNegCellContent = elCell.querySelector(`span.cell-content`)
 			console.log(elCell)
+			// console.log(elNegCellContent)
 			// had to use let or it won't work sorry 😕
-			elNegelCellContent.style.visibility = 'visible'
+			elNegCellContent.style.visibility = 'visible' //? where is null coming from
 			elCell.style.backgroundColor = 'lightgray'
 			gLastHint.style.display = 'none'
 			setTimeout(function () {
 				elCell.style.backgroundColor = ''
-				elNegelCellContent.style.visibility = 'hidden'
+				elNegCellContent.style.visibility = 'hidden'
 			}, 1000)
 		}
 	}
