@@ -387,8 +387,8 @@ function safeClick() {
 	if (gGame.safeClick === 0) return
 	var randRow = getRandomIntInclusive(0, gBoard.length - 1)
 	var randCol = getRandomIntInclusive(0, gBoard[0].length - 1)
-	if (gBoard[randRow][randCol].isMine || gBoard[randRow][randCol].isMarked) return safeClick()
-	gGame.safeClick--
+	if (gBoard[randRow][randCol].isMine || gBoard[randRow][randCol].isShown) return safeClick()
+	// gGame.safeClick--
 	var elSafeClickCount = document.querySelector('.safe-click-available')
 	var elSafeCell = document.querySelector(`.cell-${randRow}-${randCol}`)
 	elSafeClickCount.innerText = gGame.safeClick
