@@ -28,7 +28,7 @@ table {
 }
 
 .cell-content {
-	visibility: hidden;
+	/* visibility: hidden; */
 }
 
 .counter-container {

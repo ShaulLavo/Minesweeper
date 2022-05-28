@@ -27,6 +27,7 @@ var gLastHint
 
 function initGame(row, col) {
 	gBoard = buildBoard(gLevel.SIZE)
+	console.log(gBoard)
 	addMines(gLevel.SIZE, gLevel.MINES, row, col)
 	setMinesNegsCount(gBoard)
 	renderBoard(gBoard, '.table-container')
@@ -188,12 +189,14 @@ function expandShown(board, row, col) {
 			for (var j = col - 1; j <= col + 1; j++) {
 				if (j < 0 || j > board[0].length - 1) continue
 				if (i === row && j === col) continue
+				if (gBoard[i][j].isShown) continue //ignore if already shown
 				if (!board[i][j].isShown) gGame.shownCount++ // make sure we don't count prev opened cells
 				board[i][j].isShown = true
 				var elNegelCellContent = document.querySelector(`.cell-${i}-${j} span.cell-content`)
 				var elCell = document.querySelector(`.cell-${i}-${j}`)
 				elNegelCellContent.style.visibility = 'visible'
 				elCell.classList.add('clicked-cell')
+				expandShown(board, i, j)
 			}
 		}
 	}
@@ -213,13 +216,13 @@ function handleFirstClick(elCell, row, col) {
 	startCounter()
 	if (gBoard[row][col].isMine) initGame(row, col)
 	gGame.isFirstClick = false
-	var elCellContent = elCell.querySelector('span.cell-content')
-	setTimeout(function () {
-		elCell.classList.add('clicked-cell')
-		elCellContent.classList.remove('cell-content')
-	}, 50)
-	// this is a patch cuz i don't understand the bug
-	//set timeout so code will finish and then change the style
+	// var elCellContent = elCell.querySelector('span.cell-content')
+	// setTimeout(function () {
+	// 	elCell.classList.add('clicked-cell')
+	// 	elCellContent.classList.remove('cell-content')
+	// }, 50)
+	// // this is a patch cuz i don't understand the bug
+	// //set timeout so code will finish and then change the style
 }
 
 function showWin() {
@@ -335,10 +338,8 @@ function handleHint(row, col) {
 			if (gBoard[i][j].isShown) continue
 			let elCell = document.querySelector(`.cell-${i}-${j}`)
 			let elNegCellContent = elCell.querySelector(`span.cell-content`)
-			console.log(elCell)
-			// console.log(elNegCellContent)
 			// had to use let or it won't work sorry 😕
-			elNegCellContent.style.visibility = 'visible' //? where is null coming from
+			elNegCellContent.style.visibility = 'visible'
 			elCell.style.backgroundColor = 'lightgray'
 			gLastHint.style.display = 'none'
 			setTimeout(function () {
