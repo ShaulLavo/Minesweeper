@@ -19,7 +19,8 @@ var gGame = {
 	shownCount: 0,
 	markedCount: 0,
 	secsPassed: 0,
-	matchCount: 0
+	matchCount: 0,
+	safeClick: 3
 }
 var gCounterInterval
 var gWoozySmileyInterval
@@ -383,7 +384,18 @@ function showBestScore() {
 }
 
 function safeClick() {
-	console.log('hi')
+	if (gGame.safeClick === 0) return
+	var randRow = getRandomIntInclusive(0, gBoard.length - 1)
+	var randCol = getRandomIntInclusive(0, gBoard[0].length - 1)
+	if (gBoard[randRow][randCol].isMine || gBoard[randRow][randCol].isMarked) return safeClick()
+	gGame.safeClick--
+	var elSafeClickCount = document.querySelector('.safe-click-available')
+	var elSafeCell = document.querySelector(`.cell-${randRow}-${randCol}`)
+	elSafeClickCount.innerText = gGame.safeClick
+	elSafeCell.classList.add('safe-cell')
+	setTimeout(function () {
+		elSafeCell.classList.remove('safe-cell')
+	}, 1000)
 }
 
 //if first click is a mine swap it's location with first empty cell

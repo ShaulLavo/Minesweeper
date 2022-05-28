@@ -110,12 +110,18 @@ table {
 .safe-click:hover {
 	background-color: rgb(51, 51, 51);
 }
+.safe-click:hover ~ .safe-click-count {
+	visibility: visible;
+}
 .safe-click:active {
 	color: green;
 	border-style: groove;
 	background-color: rgb(23, 23, 23);
 }
-
+.safe-click-count {
+	visibility: hidden;
+	font-size: 0.75em;
+}
 .modal {
 	font-size: 100px;
 	position: absolute;
@@ -128,6 +134,9 @@ table {
 	position: absolute;
 	bottom: 0;
 	font-size: 1.2em;
+}
+.safe-cell {
+	background-color: gold;
 }
 footer {
 	position: absolute;
