@@ -13,7 +13,12 @@
 </head>
 
 <body onload="initGame()">
-    <div class="ui-container">
+    <div class="ui-container-right">
+        <span class="safe-click" onclick="safeClick()">Safe Click
+            <span class="safe-click-count"></span>
+        </span>
+    </div>
+    <div class="ui-container-left">
         <div class="counter-container">Time:<span class="counter"> 00</span></div>
         <div class="life-container">
             <span class="life-1">💜</span>
@@ -37,6 +42,7 @@
     </div>
     <div class="modal">You Win!</div>
     <div class="table-container"></div>
+    <div class="best-score">Best Score: &#8734;</div>
     <footer>made by Shaul Lavochkin</footer>
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>

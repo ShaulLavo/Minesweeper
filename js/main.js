@@ -6,7 +6,8 @@ const FLAG = '🚩'
 var gBoard
 var gLevel = {
 	SIZE: 4,
-	MINES: 2
+	MINES: 2,
+	level: 'Beginner'
 }
 
 var gGame = {
@@ -27,10 +28,11 @@ var gLastHint
 
 function initGame(row, col) {
 	gBoard = buildBoard(gLevel.SIZE)
-	console.log(gBoard)
+	// console.log(gBoard)
 	addMines(gLevel.SIZE, gLevel.MINES, row, col)
 	setMinesNegsCount(gBoard)
 	renderBoard(gBoard, '.table-container')
+	showBestScore()
 }
 
 // Builds the board
@@ -164,14 +166,17 @@ function setLvl(elLvl) {
 	if (elLvl.innerText === 'Beginner') {
 		gLevel.SIZE = 4
 		gLevel.MINES = 2
+		gLevel.level = 'Beginner'
 	}
 	if (elLvl.innerText === 'Intermediate') {
 		gLevel.SIZE = 8
 		gLevel.MINES = 12
+		gLevel.level = 'Intermediate'
 	}
 	if (elLvl.innerText === 'Expert') {
 		gLevel.SIZE = 12
 		gLevel.MINES = 30
+		gLevel.level = 'Expert'
 	}
 	restart()
 }
@@ -180,7 +185,6 @@ function setLvl(elLvl) {
 // later, try to work more like the
 // real algorithm (see description
 // at the Bonuses section below
-//! this only opens 1st degree neighbors
 function expandShown(board, row, col) {
 	if (board[row][col].isMine) return
 	if (board[row][col].minesAroundCount === 0) {
@@ -267,7 +271,10 @@ function handleLife(elCell, row, col) {
 
 function restart() {
 	for (var i = 1; i <= 3; i++) {
+		var hint = document.querySelector('.hint-' + i)
 		var life = document.querySelector('.life-' + i)
+		hint.style.display = 'inline'
+		hint.classList.remove('hint-clicked')
 		life.style.visibility = 'visible'
 	}
 	clearInterval(gCounterInterval)
@@ -362,9 +369,21 @@ function revealAllMines() {
 
 //the "score" of the game is the time taken to complete it
 function KeepScore() {
-	var currScore = localStorage.getItem('Best Time')
-	if (currScore === null) localStorage.setItem('Best Time', gGame.secsPassed)
-	if (currScore > gGame.secsPassed) localStorage.setItem('Best Time', gGame.secsPassed)
+	var currScore = localStorage.getItem('Best Time ' + gLevel.level)
+	if (currScore === null) localStorage.setItem('Best Time ' + gLevel.level, gGame.secsPassed)
+	if (currScore > gGame.secsPassed)
+		localStorage.setItem('Best Time ' + gLevel.level, gGame.secsPassed)
+}
+
+function showBestScore() {
+	var elBestScore = document.querySelector('.best-score')
+	var localBest = localStorage.getItem('Best Time ' + gLevel.level)
+	if (localBest === null) elBestScore.innerText = ''
+	else elBestScore.innerText = 'Best Score: ' + localBest
+}
+
+function safeClick() {
+	console.log('hi')
 }
 
 //if first click is a mine swap it's location with first empty cell
